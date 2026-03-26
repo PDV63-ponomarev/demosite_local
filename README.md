@@ -2,9 +2,16 @@
 
 В данном проекте представлены учебные автотесты.
 Тесты написанный на **Selene Python**.  
-Тесты запускаются через удаленный браузер **Selenoid autotest**.  
-Сборка происходит с помощью **[Jenkins](https://jenkins.autotests.cloud/job/001-PDV63-project_full/)** на сайте для демонстраций.  
+Тесты запускаются на локальном компьютере.  
 Отчет демонстрация сформирован в **[Allure](https://jenkins.autotests.cloud/job/001-PDV63-project_full/allure/)**
+
+<details>
+    <summary>Инструкция запуска</summary>
+
+1. Скачать репозиторий
+2. Установить библиотеки
+3. Параметры запуска
+</details> 
 
 Автотесты для сайта **[demoqa.com](https://demoqa.com)**:
 <details><summary>1. Elements</summary>
