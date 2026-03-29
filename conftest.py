@@ -9,10 +9,11 @@ from project import get_driver
 def browser_management(request):
     config = Config()
 
-    # driver = get_driver(config.driver_name)
+    driver = get_driver(config.driver_name)
+
     browser.config.hold_browser_open = True
     browser.config.base_url = config.base_url
-    browser.config.driver = get_driver(config.driver_name)
+    browser.config.driver = driver
     browser.config.hold_driver_at_exit = config.hold_driver_at_exit
     browser.config.window_width = config.window_width
     browser.config.window_height = config.window_height
