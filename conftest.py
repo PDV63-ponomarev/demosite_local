@@ -4,12 +4,22 @@ from selene import browser
 from project import Config
 from project import get_driver
 
+def pytest_addoption(parser):
+    parser.addoption(
+        "--driver",
+        action="store",
+        default="chrome",
+        help="Browser driver: chrome or firefox"
+    )
 
 @pytest.fixture(scope='session', autouse=True)
 def browser_management(request):
     config = Config()
 
-    driver = get_driver(config.driver_name)
+    driver_name = request.config.getoption("--driver")
+
+    # driver = get_driver(config.driver_name)
+    driver = get_driver(driver_name)
 
     browser.config.hold_browser_open = True
     browser.config.base_url = config.base_url
