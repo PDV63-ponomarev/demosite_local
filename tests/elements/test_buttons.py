@@ -1,7 +1,6 @@
 from selene import have, browser, be
 
 def test_double_click():
-
     browser.open('/buttons')
     browser.element('#doubleClickMessage').should(be.absent)
 

@@ -1,4 +1,4 @@
-from selene import be, have, by
+from selene import be, have, by, browser
 from selenium.webdriver import Keys
 import allure
 import time
@@ -15,8 +15,7 @@ state = 'Haryana'
 city = 'Karnal'
 
 @allure.title("Successful fill practice form")
-def test_pracrice_form(setup_browser):
-    browser = setup_browser
+def test_pracrice_form():
 
     with allure.step('Открытие сайта'):
         browser.open('/automation-practice-form')

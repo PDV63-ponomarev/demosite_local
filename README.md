@@ -10,15 +10,29 @@
     <summary>Инструкция запуска</summary>
 
 1. Скачать репозиторий
-2. Установить библиотеки
-3. Параметры запуска на `python`
+<details>
+<summary>2. Установить Allure </summary>
+
+- Скачать и установить **[Java](https://www.oracle.com/tr/java/technologies/downloads/#java21/)**
+
+  - Установить значение переменной 
+  >   setx /m JAVA_HOME "C:\Program Files\Java\jdk-21"  
+  >   или  
+  >   $env:JAVA_HOME = "C:\Program Files\Java\jdk-21
+  - Установить сам allure 
+  >   scoop install allure
+  </details>
+3. Установить библиотеки  
+
+
+4. Параметры запуска на `python`
 
 ```
 pytest tests --driver=firefox
 pytest tests --driver=chrome
 ```
-4. Генерация отчета
-
+5. Генерация отчета
+> allure serve allure-results
 
 </details> 
 
