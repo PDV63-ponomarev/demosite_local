@@ -14,12 +14,12 @@ predmet2 = 'Biology'
 state = 'Haryana'
 city = 'Karnal'
 
-@allure.title("Successful fill practice form")
+@allure.title("Заполнение формы")
 def test_pracrice_form():
 
     with allure.step('Открытие сайта'):
         browser.open('/automation-practice-form')
-        browser.execute_script("document.body.style.zoom='80%'")
+        browser.driver.execute_script("document.body.style.zoom='80%'")
 
     with allure.step('Заполнение полей'):
         browser.element('#firstName').should(be.blank).type(firstName)

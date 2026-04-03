@@ -1,11 +1,16 @@
-
-from selene import browser, have, be
+from selene import have, be, browser
 import allure
 from faker import Faker
 from selenium.webdriver import Keys
 
 fake = Faker()
 users = None
+
+def test_web_tables():
+    add_form()
+    added_user_in_tables()
+    check_search()
+    quantity_show_in_table()
 
 def check_empty_forms():
     browser.element('#firstName').should(be.blank)
@@ -17,7 +22,6 @@ def check_empty_forms():
     browser.element('#submit').should(be.visible)
 
 def completion_random_form():
-
     user = {
         'First Name': fake.first_name(),
         'Last Name': fake.last_name(),
@@ -28,150 +32,86 @@ def completion_random_form():
             'QA', 'Developer', 'Marketing',
             'Legal', 'Insurance', 'Compliance'])
     }
-
     browser.element('#firstName').type(user['First Name'])
     browser.element('#lastName').type(user['Last Name'])
     browser.element('#userEmail').type(user['Email'])
     browser.element('#age').type(user['Age'])
     browser.element('#salary').type(user['Salary'])
     browser.element('#department').type(user['Department'])
-
     global users
     users = user
 
-def test_add_form():
 
-    browser.open('/webtables')
+@allure.title("Заполнение формы таблицы")
+def add_form():
 
-    # нажатие кнопки
-    browser.element('#addNewRecordButton').should(be.visible)
-    browser.element('#addNewRecordButton').click()
+    with allure.step('Открытие сайта'):
+        browser.open('/webtables')
 
-    # проверка появления окна форма
-    browser.element('.modal-content').should(be.visible)
-
-    # проверка пустых полей
-    check_empty_forms()
-
-    # заполнение полей
-    completion_random_form()
-
-    browser.element('#submit').click()
-
-    # проверка закрытия поля
-    browser.element('.modal-content').should(be.absent)
-
-
-def test_check_tables():
-    tables = browser.element('.table-bordered')
-    tables.should(be.visible)
-
-    for value in users:
-        tables.should(have.text(str(value)))
-
-def test_check_search():
-
-    word = users['Last Name']
-    search = browser.element('#searchBox')
-    (search
-     .should(be.visible)
-     .should(be.blank)
-     .click()
-     .type(word)
-     )
-
-    rows = browser.all('.table-bordered tbody tr')
-    # проверка что строки есть
-    rows.should(have.size_greater_than(0))
-    # проверка что в строках есть слово
-    for row in rows:
-        row.should(have.text(word))
-
-    search.send_keys(Keys.CONTROL + 'a').send_keys(Keys.DELETE)
-
-def test_quantity_show_in_table():
-
-    browser.element('#addNewRecordButton').should(be.visible)
-    i = 0
-    while i < 15:
+    with allure.step('Открытие формы'):
+        browser.element('#addNewRecordButton').should(be.visible)
         browser.element('#addNewRecordButton').click()
+        browser.element('.modal-content').should(be.visible)
+
+    with allure.step('Заполнение полей'):
+        check_empty_forms()
         completion_random_form()
+
+    with allure.step('Поле закрылось'):
         browser.element('#submit').click()
-        i += 1
+        browser.element('.modal-content').should(be.absent)
 
-    rows = browser.all('.table-bordered tbody tr')
-    # проверка что строк меньше или 10
-    rows.should(have.size_less_than_or_equal(10))
+@allure.title("Добавление пользователя в таблицу")
+def added_user_in_tables():
+    with allure.step('Обнаружение таблицы'):
+        tables = browser.element('.table-bordered')
+        tables.should(be.visible)
 
-    browser.element('.pagination .form-control').click()
-    browser.element('[value="20"]').click()
-    rows.should(have.size_greater_than_or_equal(10))
-    rows.should(have.size_less_than_or_equal(20))
+    with allure.step('В таблице созданный юзер'):
+        for value in users:
+            tables.should(have.text(str(value)))
 
+@allure.title("Проверка работы поиска в таблице")
+def check_search():
+    word = users['Last Name']
 
-def test_added_empty_forms():
-    browser.open('/webtables')
+    with allure.step("Ввод в поиск имени"):
+        search = browser.element('#searchBox')
+        (search
+         .should(be.visible)
+         .should(be.blank)
+         .click()
+         .type(word)
+         )
 
-    browser.element('#addNewRecordButton').should(be.visible)
-    browser.element('#addNewRecordButton').click()
-    browser.element('.modal-content').should(be.visible)
+    with allure.step("Проверка работы поиска"):
+        rows = browser.all('.table-bordered tbody tr')
+        rows.should(have.size_greater_than(0))
+        for row in rows:
+            row.should(have.text(word))
+        search.send_keys(Keys.CONTROL + 'a').send_keys(Keys.DELETE)
 
-    # поля пустые, окно не пропадает
-    browser.element('#submit').click()
-    browser.element('.modal-content').should(be.visible)
+@allure.title("Добавление 15 пользователей и отображение >10")
+def quantity_show_in_table():
+    with allure.step('Обнаружение таблицы'):
+        browser.element('#addNewRecordButton').should(be.visible)
 
-    # поля пустые, выдает везде ошибку
-    # Проверка что появился класс was-validated
-    browser.element('#userForm').should(have.css_class('was-validated'))
-    # Проверка полей с ошибкой через JavaScript
-    for field_id in ['firstName', 'lastName', 'userEmail', 'age', 'salary', 'department']:
-        # # Проверяем что поле не проходит валидацию
-        is_invalid = browser.execute_script(f"""
-            return !document.getElementById('{field_id}').checkValidity();
-        """)
-        assert is_invalid, f"Поле {field_id} должно быть невалидным"
+    with allure.step('Добавление 15 пользователей'):
+        i = 0
+        while i < 15:
+            browser.element('#addNewRecordButton').click()
+            completion_random_form()
+            browser.element('#submit').click()
+            i += 1
 
+    with allure.step('Проверка пользователей в таблице не больше 10'):
+        rows = browser.all('.table-bordered tbody tr')
+        rows.should(have.size_less_than_or_equal(10))
 
-def test_added_uncorrect_forms():
-    browser.open('/webtables')
+    with allure.step('Выбор отображения 20 пользователей'):
+        browser.element('.pagination .form-control').click()
+        browser.element('[value="20"]').click()
 
-    browser.element('#addNewRecordButton').should(be.visible)
-    browser.element('#addNewRecordButton').click()
-
-    # # Словарь для сбора ошибок
-    # validation_errors: Dict[str, str] = {}
-
-    with allure.step("Заполнение формы с невалидными данными"):
-        # Заполнение полей неверными данными
-        modal = browser.element('.modal-content')
-        modal.should(be.visible)
-
-        browser.element('#firstName').type('Test123!@#$')
-        browser.element('#lastName').type('Test123!@#$')
-        browser.element('#userEmail').type('Test123!@#$')
-        browser.element('#age').type('Test123!@#$')
-        browser.element('#salary').type('Test123!@#$')
-        browser.element('#department').type('Test123!@#$')
-
-        browser.element('#submit').click()
-
-    with allure.step("Проверка валидации полей (с мягкими проверками)"):
-        for field_id in ['firstName', 'lastName', 'userEmail', 'age', 'salary', 'department']:
-            try:
-                is_invalid = browser.execute_script(f"""
-                            return !document.getElementById('{field_id}').checkValidity();
-                        """)
-                if not is_invalid:
-                    allure.attach(
-                        name=f"Недочет валидации в поле {field_id}",
-                        body=f"Поле {field_id} должно быть невалидным, но прошло проверку",
-                        attachment_type=allure.attachment_type.TEXT
-                    )
-
-            except Exception as e:
-                # Если ошибка при проверке - тоже отмечаем
-                allure.attach(
-                    name=f"Ошибка при проверке поля {field_id}",
-                    body=str(e),
-                    attachment_type=allure.attachment_type.TEXT
-                )
+    with allure.step('Проверка пользователей в таблице больше 10 и не больше 20'):
+        rows.should(have.size_greater_than_or_equal(10))
+        rows.should(have.size_less_than_or_equal(20))

@@ -28,8 +28,8 @@
 4. Параметры запуска на `python`
 
 ```
-pytest tests --driver=firefox
-pytest tests --driver=chrome
+$env:DRIVER_NAME = "chrome"; pytest tests
+$env:DRIVER_NAME = "firefox"; pytest tests
 ```
 5. Генерация отчета
 > allure serve allure-results
