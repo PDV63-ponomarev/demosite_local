@@ -2,6 +2,7 @@ import pytest
 from selene import browser
 from project import Config
 from project import get_driver
+from utils import attach
 
 
 @pytest.fixture(scope='function', autouse=True)
@@ -18,6 +19,10 @@ def browser_management(request):
     browser.config.timeout = config.timeout
 
     yield browser
+
+    attach.add_screenshot(browser)
+    attach.add_logs(browser)
+    attach.add_html(browser)
 
     if not config.hold_driver_at_exit:
         browser.quit()

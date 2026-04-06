@@ -2,6 +2,7 @@ from pydantic_settings import BaseSettings
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 
@@ -26,6 +27,8 @@ def get_driver(driver_name='chrome'):
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
         options.add_experimental_option('useAutomationExtension', False)
         options.page_load_strategy = 'eager'
+
+        options.set_capability('goog:loggingPrefs', {'browser': 'ALL'})
 
         service = webdriver.chrome.service.Service(ChromeDriverManager().install())
         driver = webdriver.Chrome(service=service, options=options)
